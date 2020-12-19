@@ -76,6 +76,7 @@ let imagesLink: [String] = [
     ]
 var tagImage: Int = 0
 var imageDownloadState: Bool = true
+var isOn = false
 
 class MyCell: UITableViewCell {
     let button = UIButton()
@@ -126,29 +127,32 @@ class MyCell: UITableViewCell {
     
     @objc func buttonTapped(sender: UIButton) {
         tagImage = sender.tag
+        print("tap \(sender.tag)")
+        button.setTitle(isOn ? "Stop" : "Start", for: .normal)
         
         if sender.currentTitle == "Start" {
-            self.button.setTitle("Stop", for: .normal)
-            if sender.currentTitle == "Stop" {
-                imageDownloadState = false
-                DispatchQueue.background(background: {
-                    self.previewImage.downloaded(from: "\(imagesLink[sender.tag])")
-                }, completion:{
-                    self.button.setTitle("Start", for: .normal)
-                    linearBar.stopAnimation()
-                })
-                print("stop")
-            } else {
-                print("start")
-                imageDownloadState = true
-                linearBar.startAnimation()
-                DispatchQueue.background(background: {
-                    self.previewImage.downloaded(from: "\(imagesLink[sender.tag])")
-                }, completion:{
-                    self.button.setTitle("Start", for: .normal)
-                    linearBar.stopAnimation()
-                })
-            }
+            print("start")
+            isOn = true
+            imageDownloadState = true
+            //self.button.setTitle("Stop", for: .normal)
+            linearBar.startAnimation()
+            DispatchQueue.background(background: {
+                self.previewImage.downloaded(from: "\(imagesLink[sender.tag])")
+            }, completion:{
+                //self.button.setTitle("Start", for: .normal)
+                linearBar.stopAnimation()
+            })
+        } else if sender.currentTitle == "Stop" {
+            print("stop")
+            isOn = false
+            imageDownloadState = false
+            linearBar.startAnimation()
+            DispatchQueue.background(background: {
+                self.previewImage.downloaded(from: "\(imagesLink[sender.tag])")
+            }, completion:{
+                //self.button.setTitle("Start", for: .normal)
+                linearBar.stopAnimation()
+            })
         }
     }
 }
